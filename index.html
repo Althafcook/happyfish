@@ -18,7 +18,6 @@ body{
   overflow:hidden;
 }
 
-/* Center Header Image */
 .header-img{
   position:absolute;
   top:40px;
@@ -28,7 +27,6 @@ body{
   max-width:70%;
 }
 
-/* Order Now Top Right */
 .order{
   position:absolute;
   top:40px;
@@ -36,16 +34,14 @@ body{
   width:180px;
 }
 
-/* Bird Bottom Right */
 .bird{
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: 420px;
-  z-index: 999;
+  position:fixed;
+  bottom:0;
+  right:0;
+  width:420px;
+  z-index:999;
 }
 
-/* Buttons Center Under Header */
 .btnbox{
   position:absolute;
   top:260px;
@@ -54,7 +50,6 @@ body{
   text-align:center;
 }
 
-/* About / Contact buttons */
 .btn{
   display:block;
   width:220px;
@@ -76,7 +71,6 @@ body{
   box-shadow:0px 10px 18px rgba(0,0,0,0.35);
 }
 
-/* WhatsApp Button */
 .whatsapp{
   width:220px;
   margin-top:10px;
@@ -87,7 +81,6 @@ body{
   transform:scale(1.05);
 }
 
-/* Mobile */
 @media(max-width:700px){
   .header-img{width:300px; top:20px;}
   .order{width:130px; right:20px; top:20px;}
@@ -100,26 +93,24 @@ body{
 <body>
 <div class="wrap">
 
-  <!-- Combined Header -->
-  <img src="assets/images/header.png" class="header-img">
+<img src="assets/images/header.png" class="header-img">
 
-  <!-- ORDER NOW -->
-  <a href="order.html"><img src="assets/images/order.png" class="order"></a>
+<a href="order.html">
+<img src="assets/images/order.png" class="order">
+</a>
 
-  <!-- Bird -->
-  <img src="assets/images/bird.png">
+<!-- ✅ FIX HERE -->
+<img src="assets/images/bird.png" class="bird">
 
-  <!-- Buttons under header (center) -->
-  <div class="btnbox">
-    <a href="about.html" class="btn">About us</a>
-    <a href="contact.html" class="btn">Contact us</a>
+<div class="btnbox">
+<a href="about.html" class="btn">About us</a>
+<a href="contact.html" class="btn">Contact us</a>
 
-    <!-- WhatsApp Chat Button -->
-    <a href="https://wa.me/919447904363?text=Hi%20Happy%20Fish!%20I%20want%20to%20chat" target="_blank">
-      <img src="assets/images/msg.png" class="whatsapp">
-    </a>
-  </div>
+<a href="https://wa.me/919447904363?text=Hi%20Happy%20Fish!%20I%20want%20to%20chat" target="_blank">
+<img src="assets/images/msg.png" class="whatsapp">
+</a>
 
+</div>
 </div>
 </body>
 </html>
