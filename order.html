@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Order — Happy Fish (Cash on Delivery)</title>
+
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#fff;margin:0;padding:20px;color:#222}
+
+    .home-btn {
+      position: fixed; top: 50px; left: 15px;
+      font-size: 16px; color: #0d7a32; text-decoration:none;
+      font-weight:600; padding:4px 6px; border-radius:6px;
+      background:transparent; z-index:999;
+    }
+    .home-btn:hover { color:#095723; }
+
+    .daily-header{
+      text-align:center;font-size:24px;font-weight:800;
+      color:#0d7a32;margin-bottom:20px;
+    }
+
+    .verify-box{
+      max-width:350px;margin:0 auto 25px auto;padding:15px;
+      border:2px solid #0d7a32;border-radius:10px;text-align:center;
+      background:#f6fff7;
+    }
+    .verify-box input{
+      width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;
+      margin:8px 0;font-size:16px;
+    }
+    .verify-btn{
+      background:#0d7a32;color:#fff;padding:10px 14px;
+      border:none;border-radius:6px;cursor:pointer;font-size:16px;
+    }
+
+    h1{text-align:center;color:#118a3d;margin-bottom:10px;}
+
+    .layout{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+    .products{display:flex;flex-wrap:wrap;gap:18px;max-width:1100px;flex:1}
+
+    .card{
+      width:260px;border-radius:12px;padding:18px;border:1px solid #eee;
+      box-shadow:0 6px 14px rgba(12,12,12,0.05);text-align:center;
+    }
+    .card img{width:140px;height:120px;object-fit:cover;border-radius:8px}
+
+    .order-panel{
+      width:360px;border-radius:12px;padding:18px;background:#fff;
+      box-shadow:0 6px 20px rgba(12,12,12,0.06)
+    }
+
+    .cart-items{max-height:420px;overflow:auto;margin-bottom:12px}
+    .cart-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee}
+
+    .checkout-btn{
+      width:100%;background:#ff5722;color:#fff;border:0;padding:12px;
+      border-radius:8px;cursor:pointer;margin-top:12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<a href="index.html" class="home-btn">🏠 Home</a>
+
+<div class="daily-header" id="dailyFresh"></div>
+
+<div class="verify-box">
+  <div style="font-size:18px;font-weight:700">Verify Your WhatsApp Number</div>
+  <input type="tel" id="wpNumber" placeholder="Enter WhatsApp Number" />
+  <button class="verify-btn" id="verifyBtn">Verify via WhatsApp</button>
+  <div id="vStatus" style="color:#b00;font-weight:600">Not Verified</div>
+</div>
+
+<h1>Order — Happy Fish (Cash on Delivery)</h1>
+
+<div class="layout">
+
+  <div id="products" class="products">Loading products…</div>
+
+  <div class="order-panel">
+    <h3>Your Order</h3>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div>Total: ₹ <span id="cartTotal">0</span></div>
+
+    <form id="orderForm">
+
+      <input type="hidden" id="order_items">
+      <input type="hidden" id="order_total">
+      <input type="hidden" id="customer_wp">
+
+      <label>Your name:</label>
+      <input disabled id="nameField" type="text" required>
+
+      <label>Phone (WhatsApp):</label>
+      <input disabled id="phoneField" type="tel" required>
+
+      <label>Delivery address:</label>
+      <textarea disabled id="addressField" rows="3" required></textarea>
+
+      <button disabled type="submit" id="checkoutBtn" class="checkout-btn">
+        Place Order (COD)
+      </button>
+
+    </form>
+  </div>
+</div>
+
+<script>
+// Date header
+(function(){
+  const d = new Date();
+  const opt = {day:'2-digit',month:'short',year:'numeric'};
+  document.getElementById("dailyFresh").innerHTML =
+    "DAILY FRESH — " + d.toLocaleDateString('en-GB', opt);
+})();
+
+let VERIFIED = false;
+
+// WhatsApp Verification
+document.getElementById("verifyBtn").onclick = function () {
+  const num = document.getElementById("wpNumber").value.trim();
+  if (num.length < 10) { alert("Enter valid WhatsApp number"); return; }
+
+  VERIFIED = true;
+  document.getElementById("vStatus").style.color = "#0d7a32";
+  document.getElementById("vStatus").innerHTML = "Verified ✓";
+
+  document.getElementById("nameField").disabled = false;
+  document.getElementById("phoneField").disabled = false;
+  document.getElementById("addressField").disabled = false;
+  document.getElementById("checkoutBtn").disabled = false;
+
+  document.getElementById("customer_wp").value = num;
+  document.getElementById("phoneField").value = num;
+
+  const msg = encodeURIComponent("Hi Happy Fish, I want to verify my WhatsApp number: " + num);
+  window.open("https://wa.me/919447904363?text=" + msg, "_blank");
+
+  setTimeout(()=> {
+    document.querySelectorAll(".add-btn").forEach(b => b.disabled = false);
+  }, 500);
+};
+
+// CART SYSTEM
+let CART = {};
+
+function _recalc() {
+  let total = 0;
+  Object.values(CART).forEach(it => total += it.price * it.qty);
+  document.getElementById("cartTotal").textContent = total;
+  document.getElementById("order_items").value = JSON.stringify(CART);
+  document.getElementById("order_total").value = total;
+  renderCart();
+}
+
+function renderCart() {
+  const c = document.getElementById("cartItems");
+  c.innerHTML = "";
+
+  const items = Object.values(CART);
+  if (items.length === 0) {
+    c.innerHTML = '<div style="color:#666">No items in cart</div>';
+    return;
+  }
+
+  items.forEach(it => {
+    const row = document.createElement("div");
+    row.className = "cart-row";
+    row.innerHTML = `
+      <div>
+        <img class="cart-thumb" src="${it.photo}" style="width:56px;height:48px;border-radius:6px;">
+        <div>${it.name}</div>
+        <div>₹ ${it.price} / Kg</div>
+      </div>
+      <div>
+        <button onclick="changeQty('${it.id}', ${it.qty-1})">-</button>
+        <input type="number" min="1" value="${it.qty}" onchange="changeQty('${it.id}', this.value)">
+        <button onclick="changeQty('${it.id}', ${it.qty+1})">+</button>
+        <div>₹ ${it.price * it.qty}</div>
+        <button onclick="removeItem('${it.id}')">Remove</button>
+      </div>
+    `;
+    c.appendChild(row);
+  });
+}
+
+function changeQty(id, v) {
+  v = Number(v); if (v < 1) v = 1;
+  CART[id].qty = v; _recalc();
+}
+
+function removeItem(id) {
+  delete CART[id]; _recalc();
+}
+
+function addToCart(item) {
+  if (!VERIFIED) { alert("Verify WhatsApp first!"); return; }
+  if (CART[item.id]) CART[item.id].qty++;
+  else CART[item.id] = { ...item, qty: 1 };
+  _recalc();
+}
+
+// Load products
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTRZSOa7zRI08XK7uMkIsfsGVUEqqa_PQLbXXD_S8bVDj6eP53PMeU2TmhysS8xxwtPvk2qiCQmV97j/pub?output=csv";
+
+fetch(CSV_URL)
+.then(r => r.text())
+.then(txt => {
+  const rows = txt.trim().split("\n");
+  rows.shift();
+
+  const wrap = document.getElementById("products");
+  wrap.innerHTML = "";
+
+  rows.forEach(r => {
+    const c = r.split(",");
+    const id = c[0], name = c[1], price = Number(c[2]), img = c[4];
+    const photo = "https://images.weserv.nl/?url=" + encodeURIComponent(img.replace(/^https?:\/\//, ''));
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${photo}">
+      <div class="name">${name}</div>
+      <div class="price">₹ ${price} / Kg</div>
+      <button disabled class="add-btn">Add to cart</button>
+    `;
+
+    card.querySelector("button").onclick = () => {
+      addToCart({ id, name, price, photo });
+    };
+
+    wrap.appendChild(card);
+  });
+});
+
+// SUBMIT ORDER
+document.getElementById("orderForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  if (!VERIFIED) {
+    alert("Verify WhatsApp first.");
+    return;
+  }
+
+  _recalc();
+
+  const payload = {
+    name: document.getElementById("nameField").value,
+    phone: document.getElementById("phoneField").value,
+    address: document.getElementById("addressField").value,
+    items: document.getElementById("order_items").value,
+    total: document.getElementById("order_total").value,
+    status: "Pending"
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbwQh2Hpexdu7lsy8sCjBw6DcPuPryxaYBrEwAzkh5EEsttciyc6t7vWp1DRgDCIRFQ4dA/exec", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(res => {
+      if (res.result === "success") {
+          alert("Order placed successfully! ✓");
+          window.location.href = "thankyou.html";
+      } else {
+          alert("Error! Could not save order.");
+      }
+  })
+  .catch(err => {
+      console.error(err);
+      alert("Error sending order.");
+  });
+});
+</script>
+
+</body>
+</html>
