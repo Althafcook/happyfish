@@ -18,15 +18,17 @@ body{
   overflow:hidden;
 }
 
+/* Header */
 .header-img{
   position:absolute;
   top:40px;
   left:50%;
   transform:translateX(-50%);
   width:520px;
-  max-width:70%;
+  max-width:90%;
 }
 
+/* Order button */
 .order{
   position:absolute;
   top:40px;
@@ -34,14 +36,17 @@ body{
   width:180px;
 }
 
+/* Bird */
 .bird{
   position:fixed;
   bottom:0;
   right:0;
   width:420px;
   z-index:999;
+  pointer-events:none;
 }
 
+/* Buttons */
 .btnbox{
   position:absolute;
   top:260px;
@@ -62,35 +67,45 @@ body{
   text-align:center;
   text-decoration:none;
   box-shadow:0px 4px 6px rgba(0,0,0,0.3);
-  transition:0.25s;
-}
-
-.btn:hover{
-  background:#ff5838;
-  transform:translateY(-4px);
-  box-shadow:0px 10px 18px rgba(0,0,0,0.35);
 }
 
 .whatsapp{
   width:220px;
   margin-top:10px;
-  transition:0.25s;
 }
 
-.whatsapp:hover{
-  transform:scale(1.05);
-}
-
+/* 📱 MOBILE FIX */
 @media(max-width:700px){
-  .header-img{width:300px; top:20px;}
-  .order{width:130px; right:20px; top:20px;}
-  .bird{display:none;}
-  .btnbox{top:260px;}
+
+  .header-img{
+    width:280px;
+    top:20px;
+  }
+
+  .order{
+    width:110px;
+    right:10px;
+    top:10px;
+  }
+
+  .btnbox{
+    top:230px;
+  }
+
+  /* Bird resize instead of hide */
+  .bird{
+    width:180px;
+    bottom:-10px;
+    right:-20px;
+    opacity:0.9;
+  }
 }
+
 </style>
 </head>
 
 <body>
+
 <div class="wrap">
 
 <img src="assets/images/header.png" class="header-img">
@@ -99,11 +114,12 @@ body{
 <img src="assets/images/order.png" class="order">
 </a>
 
-<!-- ✅ FIX HERE -->
 <img src="assets/images/bird.png" class="bird">
 
 <div class="btnbox">
+
 <a href="about.html" class="btn">About us</a>
+
 <a href="contact.html" class="btn">Contact us</a>
 
 <a href="https://wa.me/919447904363?text=Hi%20Happy%20Fish!%20I%20want%20to%20chat" target="_blank">
@@ -111,6 +127,7 @@ body{
 </a>
 
 </div>
+
 </div>
 </body>
 </html>
